@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import NordPoolCard from '../NordPoolCard';
 
@@ -10,7 +10,13 @@ jest.mock('recharts', () => ({
   BarChart: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="bar-chart">{children}</div>
   ),
-  Bar: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
+  // Call label at index 15 (matches MOCK_CURRENT_DATA.currentHourIndex) to surface "now" in DOM
+  Bar: ({ children, label }: { children?: React.ReactNode; label?: (props: Record<string, unknown>) => React.ReactNode }) => (
+    <div>
+      {typeof label === 'function' && label({ x: 0, y: 0, width: 10, index: 15 })}
+      {children}
+    </div>
+  ),
   Cell: () => null,
   Tooltip: () => null,
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -80,12 +86,18 @@ describe('NordPoolCard', () => {
     expect(screen.getByText(/avg 91\.5 €\/MWh/)).toBeInTheDocument();
   });
 
-  it('shows last point price for history data', () => {
+  it('renders "now" label over the current hour bar', () => {
+    mockUseNordPoolChartData.mockReturnValue({ data: MOCK_CURRENT_DATA, loading: false, error: null });
+    render(<NordPoolCard />);
+    expect(screen.getByText('now')).toBeInTheDocument();
+  });
+
+  it('shows last point price for history data', async () => {
     mockUseNordPoolChartData.mockReturnValue({ data: MOCK_HISTORY_DATA, loading: false, error: null });
     localStorage.setItem('chart-range-nordpool-ee', '7D');
     render(<NordPoolCard />);
+    await waitFor(() => expect(screen.getByText(/7D kesk\./)).toBeInTheDocument());
     expect(screen.getByText(/92\.1 €\/MWh/)).toBeInTheDocument();
-    expect(screen.getByText(/7D kesk\./)).toBeInTheDocument();
   });
 
   it('switches active range when a button is clicked', async () => {
@@ -101,9 +113,11 @@ describe('NordPoolCard', () => {
     expect(localStorage.getItem('chart-range-nordpool-ee')).toBe('1M');
   });
 
-  it('initialises to stored range from localStorage', () => {
+  it('initialises to stored range from localStorage', async () => {
     localStorage.setItem('chart-range-nordpool-ee', '1Y');
     render(<NordPoolCard />);
-    expect(screen.getByRole('button', { name: '1Y' })).toHaveAttribute('aria-pressed', 'true');
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: '1Y' })).toHaveAttribute('aria-pressed', 'true'),
+    );
   });
 });

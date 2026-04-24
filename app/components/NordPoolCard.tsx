@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
@@ -17,13 +17,18 @@ function getBarFill(index: number, currentHourIndex: number, hasTomorrow: boolea
 }
 
 export default function NordPoolCard() {
-  const [selectedRange, setSelectedRange] = useState<NordPoolRange>(() => {
+  const [selectedRange, setSelectedRange] = useState<NordPoolRange>('CURRENT');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored && (RANGES as string[]).includes(stored)) return stored as NordPoolRange;
+      if (stored && (RANGES as string[]).includes(stored)) {
+        setSelectedRange(stored as NordPoolRange);
+      }
     } catch {}
-    return 'CURRENT';
-  });
+  }, []);
 
   function handleRangeChange(range: NordPoolRange) {
     try { localStorage.setItem(STORAGE_KEY, range); } catch {}
@@ -31,12 +36,10 @@ export default function NordPoolCard() {
   }
 
   const { data, loading, error } = useNordPoolChartData(selectedRange);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
 
   const isCurrentView = data != null && 'currentHourIndex' in data;
 
-  const barData = (() => {
+  const barData = useMemo(() => {
     if (!data) return [];
     if (isCurrentView && 'currentHourIndex' in data) {
       return data.points.map((p, i) => ({
@@ -45,7 +48,7 @@ export default function NordPoolCard() {
       }));
     }
     return data.points.map(p => ({ ...p, fill: '#c7d2fe' }));
-  })();
+  }, [data, isCurrentView]);
 
   let mainStat = '—';
   let subStat = '';
@@ -107,9 +110,10 @@ export default function NordPoolCard() {
               <Bar
                 dataKey="price"
                 radius={[2, 2, 0, 0]}
-                label={({ x, y, width, index }: { x: number; y: number; width: number; index: number }) => {
+                label={(props: Record<string, unknown>) => {
+                  const { x, y, width, index } = props as { x: number; y: number; width: number; index: number };
                   if (!data || !('currentHourIndex' in data) || index !== data.currentHourIndex) {
-                    return <></>;
+                    return null;
                   }
                   return (
                     <text
@@ -125,8 +129,8 @@ export default function NordPoolCard() {
                   );
                 }}
               >
-                {barData.map((entry, index) => (
-                  <Cell key={index} fill={entry.fill} />
+                {barData.map((entry) => (
+                  <Cell key={entry.timestamp} fill={entry.fill} />
                 ))}
               </Bar>
             </BarChart>
