@@ -1,4 +1,5 @@
 import type { EnergyData } from '@/types';
+import TickerCard from './TickerCard';
 import Widget from './Widget';
 
 interface Props {
@@ -25,19 +26,13 @@ export default function EnergySection({ data, loading, error }: Props) {
         ) : (
           <>
             <div className="flex-1 min-w-40">
-              <Widget
+              <TickerCard
                 label="Brent Crude"
-                value={data.brent.price != null ? `$${data.brent.price.toFixed(2)}` : '—'}
-                subValue={
-                  data.brent.changePercent != null
-                    ? `${data.brent.changePercent >= 0 ? '▲ +' : '▼ −'}${Math.abs(data.brent.changePercent).toFixed(2)}%`
-                    : undefined
-                }
-                subValueColor={
-                  data.brent.changePercent != null
-                    ? data.brent.changePercent >= 0 ? 'green' : 'red'
-                    : 'neutral'
-                }
+                symbol="BZ=F"
+                price={data.brent.price}
+                change={data.brent.change}
+                changePercent={data.brent.changePercent}
+                formatValue={(p) => `$${p.toFixed(2)}`}
               />
             </div>
             <div className="flex-1 min-w-40">
