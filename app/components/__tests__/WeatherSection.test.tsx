@@ -84,4 +84,15 @@ describe('WeatherSection', () => {
     expect(screen.queryByText('8°C ⛅')).not.toBeInTheDocument();
     expect(screen.queryByTestId('area-chart')).not.toBeInTheDocument();
   });
+
+  it('highlights the next upcoming slot with indigo styling', () => {
+    // Pin clock to 10:00 Tallinn (07:00 UTC) — 12:00 should be next
+    jest.useFakeTimers().setSystemTime(new Date('2024-04-24T07:00:00Z'));
+    render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    const slots = document.querySelectorAll('[class*="rounded-lg"]');
+    // Find the 12:00 slot — it should have indigo background
+    const slot12 = Array.from(slots).find(el => el.textContent?.includes('12:00'));
+    expect(slot12?.className).toMatch(/bg-indigo-50/);
+    jest.useRealTimers();
+  });
 });

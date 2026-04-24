@@ -50,7 +50,7 @@ export default function WeatherSection({ data, loading, error }: Props) {
     if (!data) return null;
     const next = data.hourly.find(slot => {
       const h = parseInt(slot.time.split(':')[0], 10);
-      return h === 0 || h > currentTallinnHour;
+      return h > currentTallinnHour || (h === 0 && currentTallinnHour >= 18);
     });
     return next?.time ?? null;
   }, [data, currentTallinnHour]);
@@ -131,8 +131,8 @@ export default function WeatherSection({ data, loading, error }: Props) {
                   />
                   <YAxis domain={['auto', 'auto']} hide />
                   <Tooltip
-                    formatter={(value: number) => [`${value}°C`, 'Temperatuur']}
-                    labelFormatter={(hour: number) => `${String(hour).padStart(2, '0')}:00`}
+                    formatter={(value) => [`${Number(value)}°C`, 'Temperatuur']}
+                    labelFormatter={(hour) => `${String(Number(hour)).padStart(2, '0')}:00`}
                   />
                   <ReferenceLine
                     x={currentTallinnHour}
