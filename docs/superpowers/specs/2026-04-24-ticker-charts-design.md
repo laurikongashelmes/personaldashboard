@@ -75,7 +75,7 @@ Internal state: `selectedRange: ChartRange` (default `'7D'`).
 
 Layout (top to bottom):
 1. Label (small uppercase, gray)
-2. Recharts `AreaChart` with `Tooltip` — chart line/fill color green if `changePercent >= 0`, red otherwise
+2. Recharts `AreaChart` with `Tooltip` — chart line/fill color indigo (`#6366f1`) if `changePercent >= 0`, red (`#dc2626`) otherwise
 3. Price (large, bold) + change % (colored arrow)
 4. Range switcher: `1D | 7D | 1M | 1Y` buttons — active range highlighted in indigo
 
@@ -114,7 +114,7 @@ Chart data is **not** re-fetched on the main 5-minute refresh. Users can switch 
 - **1D on weekends/holidays:** Yahoo returns empty data. Chart area shows "Andmed pole saadaval"; price + change still displayed.
 - **Yahoo Finance failure:** `/api/charts` returns 503; hook sets `error`; card shows inline error in chart area.
 - **1Y data volume:** Weekly interval keeps ~52 points — appropriate for an area chart.
-- **Chart color:** Derived from `changePercent` sign — green (`#16a34a` / indigo `#6366f1`) if positive, red (`#dc2626`) if negative. Uses indigo as the neutral/positive color consistent with the range button active state.
+- **Chart color:** Indigo (`#6366f1`) when `changePercent >= 0`, red (`#dc2626`) when negative. Indigo is consistent with the active range button color. The price/change text continues to use green/red as today.
 
 ## Testing
 
