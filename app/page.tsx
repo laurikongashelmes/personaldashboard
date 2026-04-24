@@ -30,6 +30,8 @@ export default function Home() {
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherError, setWeatherError] = useState<string | null>(null);
 
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
   const fetchAll = useCallback(async () => {
     setMarketsLoading(true);
     setEnergyLoading(true);
@@ -64,6 +66,8 @@ export default function Home() {
       setWeatherError('Failed to load weather data');
     }
     setWeatherLoading(false);
+
+    setLastUpdated(new Date());
   }, []);
 
   useEffect(() => {
@@ -78,6 +82,11 @@ export default function Home() {
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Morning Brief</h1>
           <p className="mt-1 text-sm text-gray-500">{formatDate(new Date())}</p>
+          {lastUpdated && (
+            <p className="mt-0.5 text-xs text-gray-400">
+              Last updated: {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+            </p>
+          )}
         </header>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
