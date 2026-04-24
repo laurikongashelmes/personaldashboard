@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
+import type { LabelProps } from 'recharts';
 import { useNordPoolChartData } from '@/lib/useNordPoolChartData';
 import type { NordPoolRange } from '@/types';
 
@@ -21,6 +22,7 @@ export default function NordPoolCard() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -110,8 +112,8 @@ export default function NordPoolCard() {
               <Bar
                 dataKey="price"
                 radius={[2, 2, 0, 0]}
-                label={(props: Record<string, unknown>) => {
-                  const { x, y, width, index } = props as { x: number; y: number; width: number; index: number };
+                label={(props: LabelProps) => {
+                  const { x, y, width, index } = props as LabelProps & { x: number; y: number; width: number; index: number };
                   if (!data || !('currentHourIndex' in data) || index !== data.currentHourIndex) {
                     return null;
                   }

@@ -64,7 +64,7 @@ it('re-fetches and resets loading when range changes', async () => {
 
   const { result, rerender } = renderHook(
     ({ range }: { range: '7D' | '1M' }) => useChartData('^STOXX50E', range),
-    { initialProps: { range: '7D' as const } },
+    { initialProps: { range: '7D' as '7D' | '1M' } },
   );
 
   await waitFor(() => expect(result.current.loading).toBe(false));

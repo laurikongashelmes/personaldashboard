@@ -79,7 +79,7 @@ it('re-fetches when range changes', async () => {
 
   const { result, rerender } = renderHook(
     ({ range }: { range: 'CURRENT' | '7D' }) => useNordPoolChartData(range),
-    { initialProps: { range: 'CURRENT' as const } },
+    { initialProps: { range: 'CURRENT' as 'CURRENT' | '7D' } },
   );
 
   await waitFor(() => expect(result.current.loading).toBe(false));
