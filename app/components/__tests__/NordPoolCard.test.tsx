@@ -79,11 +79,11 @@ describe('NordPoolCard', () => {
     expect(screen.getByRole('button', { name: '7D' })).toHaveAttribute('aria-pressed', 'false');
   });
 
-  it('shows current hour price and avg for CURRENT data', () => {
+  it('shows current hour price for CURRENT data', () => {
     mockUseNordPoolChartData.mockReturnValue({ data: MOCK_CURRENT_DATA, loading: false, error: null });
     render(<NordPoolCard />);
     expect(screen.getByText(/95\.0 €\/MWh/)).toBeInTheDocument();
-    expect(screen.getByText(/avg 91\.5 €\/MWh/)).toBeInTheDocument();
+    expect(screen.queryByText(/avg/)).not.toBeInTheDocument();
   });
 
   it('renders "now" label over the current hour bar', () => {
@@ -96,8 +96,8 @@ describe('NordPoolCard', () => {
     mockUseNordPoolChartData.mockReturnValue({ data: MOCK_HISTORY_DATA, loading: false, error: null });
     localStorage.setItem('chart-range-nordpool-ee', '7D');
     render(<NordPoolCard />);
-    await waitFor(() => expect(screen.getByText(/7D kesk\./)).toBeInTheDocument());
-    expect(screen.getByText(/92\.1 €\/MWh/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(/92\.1 €\/MWh/)).toBeInTheDocument());
+    expect(screen.queryByText(/kesk\./)).not.toBeInTheDocument();
   });
 
   it('switches active range when a button is clicked', async () => {

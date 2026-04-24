@@ -53,17 +53,14 @@ export default function NordPoolCard() {
   }, [data, isCurrentView]);
 
   let mainStat = '—';
-  let subStat = '';
   if (data) {
     if ('currentHourIndex' in data) {
       mainStat = data.currentHourPrice != null
         ? `${data.currentHourPrice.toFixed(1)} €/MWh`
         : '—';
-      subStat = `avg ${data.todayAvgPrice.toFixed(1)} €/MWh täna`;
     } else if (data.points.length > 0) {
       const last = data.points[data.points.length - 1];
       mainStat = `${last.price.toFixed(1)} €/MWh`;
-      subStat = `${selectedRange} kesk.`;
     }
   }
 
@@ -142,7 +139,6 @@ export default function NordPoolCard() {
 
       <div className="flex items-baseline gap-2">
         <span className="text-2xl font-bold text-gray-900">{mainStat}</span>
-        {subStat && <span className="text-sm font-medium text-gray-500">{subStat}</span>}
       </div>
 
       <div className="flex gap-1">
