@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useChartData } from '@/lib/useChartData';
 import type { ChartRange, ChartPoint } from '@/types';
@@ -53,6 +53,8 @@ export default function TickerCard({
     setSelectedRange(range);
   }
   const { points, loading, error } = useChartData(symbol, selectedRange);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const chartColor = (changePercent ?? 0) >= 0 ? '#6366f1' : '#dc2626';
   const gradientId = `chart-${symbol.replace(/[^a-zA-Z0-9]/g, '')}`;
@@ -62,7 +64,7 @@ export default function TickerCard({
       <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase">{label}</p>
 
       <div className="h-[72px]">
-        {loading ? (
+        {!mounted || loading ? (
           <div
             data-testid="chart-skeleton"
             className="h-full rounded bg-gray-100 animate-pulse"
