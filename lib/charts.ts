@@ -18,10 +18,10 @@ function getPeriod1(range: ChartRange): Date {
   }
 }
 
-function getInterval(range: ChartRange): '15m' | '1d' | '1wk' {
+function getInterval(range: ChartRange): '15m' | '1h' | '1d' | '1wk' {
   switch (range) {
     case '1D': return '15m';
-    case '7D': return '1d';
+    case '7D': return '1h';
     case '1M': return '1d';
     case '1Y': return '1wk';
   }

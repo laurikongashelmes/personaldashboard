@@ -55,12 +55,12 @@ describe('fetchChartData', () => {
     );
   });
 
-  it('uses 1d interval for 7D range', async () => {
+  it('uses 1h interval for 7D range', async () => {
     mockChart.mockResolvedValue({ quotes: [] });
     await fetchChartData('^STOXX50E', '7D');
     expect(mockChart).toHaveBeenCalledWith(
       '^STOXX50E',
-      expect.objectContaining({ interval: '1d' }),
+      expect.objectContaining({ interval: '1h' }),
     );
   });
 

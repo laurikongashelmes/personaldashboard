@@ -1,6 +1,6 @@
-# Morning Brief
+# Daily Brief
 
-A personal morning dashboard built with Next.js 16, React 19, and Tailwind CSS 4.
+A personal dashboard built with Next.js 16, React 19, and Tailwind CSS 4.
 
 Displays at a glance:
 - **Markets** — EURO STOXX 50 and EUR/USD (via Yahoo Finance)

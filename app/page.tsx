@@ -80,7 +80,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-5xl mx-auto px-4 py-8 sm:px-6 sm:py-12">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Päeva ülevaade</h1>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Isiklik armatuurlaud</h1>
           <p className="mt-1 text-sm text-gray-500">{formatDate(new Date())}</p>
           {lastUpdated && (
             <p className="mt-0.5 text-xs text-gray-400">
