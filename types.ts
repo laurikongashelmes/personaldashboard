@@ -17,6 +17,11 @@ export interface HourlySlot {
   emoji: string;
 }
 
+export interface TempPoint {
+  hour: number; // Tallinn local hour, 0–23
+  temp: number; // °C, rounded to integer
+}
+
 export interface WeatherData {
   current: {
     temp: number;
@@ -24,6 +29,7 @@ export interface WeatherData {
     emoji: string;
   };
   hourly: HourlySlot[];
+  dailyChart: TempPoint[];
 }
 
 export type ChartRange = '1D' | '7D' | '1M' | '1Y';
