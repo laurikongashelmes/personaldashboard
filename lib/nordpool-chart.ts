@@ -86,7 +86,7 @@ async function fetchCurrentData(now: Date): Promise<NordPoolCurrentData> {
 }
 
 async function fetchHistoryData(range: '7D' | '1M' | '1Y', now: Date): Promise<NordPoolHistoryData> {
-  const daysBack = range === '7D' ? 7 : range === '1M' ? 30 : 365;
+  const daysBack = range === '7D' ? 7 : range === '1M' ? 30 : 364;
   const startDate = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);
   const startStr = getTallinnDateStr(startDate);
   const startOffset = getTallinnOffset(startDate);
