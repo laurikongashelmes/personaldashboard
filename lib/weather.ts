@@ -6,31 +6,31 @@ interface WeatherCondition {
 }
 
 const WMO_CODES: Record<number, WeatherCondition> = {
-  0:  { description: 'Clear sky',          emoji: '☀️' },
-  1:  { description: 'Mainly clear',       emoji: '🌤️' },
-  2:  { description: 'Partly cloudy',      emoji: '⛅' },
-  3:  { description: 'Overcast',           emoji: '☁️' },
-  45: { description: 'Fog',               emoji: '🌫️' },
-  48: { description: 'Icy fog',           emoji: '🌫️' },
-  51: { description: 'Light drizzle',     emoji: '🌦️' },
-  53: { description: 'Drizzle',           emoji: '🌦️' },
-  55: { description: 'Heavy drizzle',     emoji: '🌧️' },
-  61: { description: 'Light rain',        emoji: '🌧️' },
-  63: { description: 'Rain',              emoji: '🌧️' },
-  65: { description: 'Heavy rain',        emoji: '🌧️' },
-  71: { description: 'Light snow',        emoji: '🌨️' },
-  73: { description: 'Snow',              emoji: '🌨️' },
-  75: { description: 'Heavy snow',        emoji: '❄️' },
-  80: { description: 'Rain showers',      emoji: '🌦️' },
-  81: { description: 'Heavy showers',     emoji: '🌧️' },
-  82: { description: 'Violent showers',   emoji: '⛈️' },
-  95: { description: 'Thunderstorm',      emoji: '⛈️' },
-  96: { description: 'Thunderstorm+hail', emoji: '⛈️' },
-  99: { description: 'Thunderstorm+hail', emoji: '⛈️' },
+  0:  { description: 'Selge taevas',          emoji: '☀️' },
+  1:  { description: 'Peamiselt selge',        emoji: '🌤️' },
+  2:  { description: 'Osaliselt pilves',       emoji: '⛅' },
+  3:  { description: 'Pilves',                 emoji: '☁️' },
+  45: { description: 'Udu',                   emoji: '🌫️' },
+  48: { description: 'Jäine udu',             emoji: '🌫️' },
+  51: { description: 'Kerge uduvihm',         emoji: '🌦️' },
+  53: { description: 'Uduvihm',               emoji: '🌦️' },
+  55: { description: 'Tugev uduvihm',         emoji: '🌧️' },
+  61: { description: 'Kerge vihm',            emoji: '🌧️' },
+  63: { description: 'Vihm',                  emoji: '🌧️' },
+  65: { description: 'Tugev vihm',            emoji: '🌧️' },
+  71: { description: 'Kerge lumesadu',        emoji: '🌨️' },
+  73: { description: 'Lumi',                  emoji: '🌨️' },
+  75: { description: 'Tugev lumesadu',        emoji: '❄️' },
+  80: { description: 'Vihmahoog',             emoji: '🌦️' },
+  81: { description: 'Tugev vihmahoog',       emoji: '🌧️' },
+  82: { description: 'Väga tugev vihmahoog',  emoji: '⛈️' },
+  95: { description: 'Äike',                  emoji: '⛈️' },
+  96: { description: 'Äike ja rahe',          emoji: '⛈️' },
+  99: { description: 'Äike ja rahe',          emoji: '⛈️' },
 };
 
 export function mapWeatherCode(code: number): WeatherCondition {
-  return WMO_CODES[code] ?? { description: 'Unknown', emoji: '🌡️' };
+  return WMO_CODES[code] ?? { description: 'Teadmata', emoji: '🌡️' };
 }
 
 export function filterRemainingHourly(

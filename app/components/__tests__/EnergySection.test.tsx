@@ -10,7 +10,7 @@ const MOCK_DATA: EnergyData = {
 describe('EnergySection', () => {
   it('renders section heading', () => {
     render(<EnergySection data={MOCK_DATA} loading={false} error={null} />);
-    expect(screen.getByText('Energy')).toBeInTheDocument();
+    expect(screen.getByText('Energia')).toBeInTheDocument();
   });
 
   it('renders Brent crude price', () => {

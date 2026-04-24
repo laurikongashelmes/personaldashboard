@@ -1,7 +1,9 @@
-import yahooFinance from 'yahoo-finance2';
+import YahooFinance from 'yahoo-finance2';
 import type { EnergyData } from '../types';
 import type { QuoteSummaryResult } from 'yahoo-finance2/modules/quoteSummary-iface';
 import { computeNordPoolStats } from './nordpool';
+
+const yahooFinance = new YahooFinance();
 
 const ELERING_API = 'https://dashboard.elering.ee/api/nps/price';
 

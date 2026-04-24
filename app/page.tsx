@@ -9,7 +9,7 @@ import WeatherSection from './components/WeatherSection';
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString('et-EE', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -47,7 +47,7 @@ export default function Home() {
       setMarkets(marketsResult.value);
       setMarketsError(null);
     } else {
-      setMarketsError('Failed to load markets data');
+      setMarketsError('Turude andmete laadimine ebaõnnestus');
     }
     setMarketsLoading(false);
 
@@ -55,7 +55,7 @@ export default function Home() {
       setEnergy(energyResult.value);
       setEnergyError(null);
     } else {
-      setEnergyError('Failed to load energy data');
+      setEnergyError('Energia andmete laadimine ebaõnnestus');
     }
     setEnergyLoading(false);
 
@@ -63,7 +63,7 @@ export default function Home() {
       setWeather(weatherResult.value);
       setWeatherError(null);
     } else {
-      setWeatherError('Failed to load weather data');
+      setWeatherError('Ilmaandmete laadimine ebaõnnestus');
     }
     setWeatherLoading(false);
 
@@ -80,11 +80,11 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-5xl mx-auto px-4 py-8 sm:px-6 sm:py-12">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Morning Brief</h1>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Päeva ülevaade</h1>
           <p className="mt-1 text-sm text-gray-500">{formatDate(new Date())}</p>
           {lastUpdated && (
             <p className="mt-0.5 text-xs text-gray-400">
-              Last updated: {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+              Uuendatud: {lastUpdated.toLocaleTimeString('et-EE', { hour: '2-digit', minute: '2-digit' })}
             </p>
           )}
         </header>

@@ -1,14 +1,16 @@
 // @jest-environment node
+
+jest.mock('yahoo-finance2', () => {
+  const mockQuoteSummary = jest.fn();
+  const MockClass = jest.fn(() => ({ quoteSummary: mockQuoteSummary }));
+  (MockClass as any).__mockQuoteSummary = mockQuoteSummary;
+  return { __esModule: true, default: MockClass };
+});
+
 import { fetchEnergy } from '../energy';
+import YahooFinance from 'yahoo-finance2';
 
-jest.mock('yahoo-finance2', () => ({
-  __esModule: true,
-  default: {
-    quoteSummary: jest.fn(),
-  },
-}));
-
-import yahooFinance from 'yahoo-finance2';
+const mockQuoteSummary = (YahooFinance as any).__mockQuoteSummary as jest.Mock;
 
 const MOCK_EE_PRICES = [
   { timestamp: 1714003200, price: 80.0 },
@@ -33,7 +35,7 @@ describe('fetchEnergy', () => {
       json: async () => ELERING_OK_RESPONSE,
     }) as jest.Mock;
 
-    (yahooFinance.quoteSummary as jest.Mock).mockResolvedValue({
+    mockQuoteSummary.mockResolvedValue({
       price: {
         regularMarketPrice: 75.5,
         regularMarketChange: -1.2,
@@ -56,7 +58,7 @@ describe('fetchEnergy', () => {
   it('Elering API error → nordpool stats are zeros/fallback', async () => {
     global.fetch = jest.fn().mockRejectedValue(new Error('Network error')) as jest.Mock;
 
-    (yahooFinance.quoteSummary as jest.Mock).mockResolvedValue({
+    mockQuoteSummary.mockResolvedValue({
       price: {
         regularMarketPrice: 75.5,
         regularMarketChange: -1.2,
@@ -77,7 +79,7 @@ describe('fetchEnergy', () => {
       json: async () => ELERING_OK_RESPONSE,
     }) as jest.Mock;
 
-    (yahooFinance.quoteSummary as jest.Mock).mockRejectedValue(new Error('Yahoo error'));
+    mockQuoteSummary.mockRejectedValue(new Error('Yahoo error'));
 
     const result = await fetchEnergy();
 

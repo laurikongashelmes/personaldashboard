@@ -10,7 +10,7 @@ const MOCK_TICKERS: TickerData[] = [
 describe('MarketsSection', () => {
   it('renders section heading', () => {
     render(<MarketsSection data={MOCK_TICKERS} loading={false} error={null} />);
-    expect(screen.getByText('Markets')).toBeInTheDocument();
+    expect(screen.getByText('Turud')).toBeInTheDocument();
   });
 
   it('renders a card for each ticker', () => {

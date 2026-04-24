@@ -10,7 +10,7 @@ export default function WeatherSection({ data, loading, error }: Props) {
   return (
     <section>
       <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-3">
-        Weather · Tallinn
+        Ilm · Tallinn
       </h2>
       {loading ? (
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm animate-pulse">
@@ -22,7 +22,7 @@ export default function WeatherSection({ data, loading, error }: Props) {
         </div>
       ) : error || !data ? (
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-          <p className="text-sm text-red-400">{error ?? 'Unavailable'}</p>
+          <p className="text-sm text-red-400">{error ?? 'Pole saadaval'}</p>
         </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">

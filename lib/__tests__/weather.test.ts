@@ -4,20 +4,20 @@ import type { HourlySlot } from '../../types';
 
 describe('mapWeatherCode', () => {
   it('maps code 0 to clear sky', () => {
-    expect(mapWeatherCode(0)).toEqual({ description: 'Clear sky', emoji: '☀️' });
+    expect(mapWeatherCode(0)).toEqual({ description: 'Selge taevas', emoji: '☀️' });
   });
 
   it('maps code 2 to partly cloudy', () => {
-    expect(mapWeatherCode(2)).toEqual({ description: 'Partly cloudy', emoji: '⛅' });
+    expect(mapWeatherCode(2)).toEqual({ description: 'Osaliselt pilves', emoji: '⛅' });
   });
 
   it('maps code 61 to rain', () => {
-    expect(mapWeatherCode(61)).toEqual({ description: 'Light rain', emoji: '🌧️' });
+    expect(mapWeatherCode(61)).toEqual({ description: 'Kerge vihm', emoji: '🌧️' });
   });
 
   it('returns unknown for unmapped codes', () => {
     const result = mapWeatherCode(999);
-    expect(result.description).toBe('Unknown');
+    expect(result.description).toBe('Teadmata');
   });
 });
 

@@ -5,20 +5,20 @@ import type { WeatherData } from '@/types';
 const MOCK_DATA: WeatherData = {
   current: {
     temp: 8,
-    description: 'Partly cloudy',
+    description: 'Osaliselt pilves',
     emoji: '⛅',
   },
   hourly: [
-    { time: '12:00', temp: 11, description: 'Partly cloudy', emoji: '⛅' },
-    { time: '15:00', temp: 10, description: 'Overcast', emoji: '☁️' },
-    { time: '18:00', temp: 8, description: 'Rain', emoji: '🌧️' },
+    { time: '12:00', temp: 11, description: 'Osaliselt pilves', emoji: '⛅' },
+    { time: '15:00', temp: 10, description: 'Pilves', emoji: '☁️' },
+    { time: '18:00', temp: 8, description: 'Vihm', emoji: '🌧️' },
   ],
 };
 
 describe('WeatherSection', () => {
   it('renders section heading', () => {
     render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
-    expect(screen.getByText('Weather · Tallinn')).toBeInTheDocument();
+    expect(screen.getByText('Ilm · Tallinn')).toBeInTheDocument();
   });
 
   it('renders current temperature and emoji', () => {
@@ -28,7 +28,7 @@ describe('WeatherSection', () => {
 
   it('renders current weather description', () => {
     render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
-    expect(screen.getByText('Partly cloudy')).toBeInTheDocument();
+    expect(screen.getByText('Osaliselt pilves')).toBeInTheDocument();
   });
 
   it('renders hourly forecast times', () => {

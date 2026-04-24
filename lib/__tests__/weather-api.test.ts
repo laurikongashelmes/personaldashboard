@@ -32,7 +32,7 @@ describe('fetchWeatherData', () => {
 
   it('returns current weather description and emoji', async () => {
     const result = await fetchWeatherData({ lat: 59.437, lon: 24.7536 });
-    expect(result.current.description).toBe('Partly cloudy');
+    expect(result.current.description).toBe('Osaliselt pilves');
     expect(result.current.emoji).toBe('⛅');
   });
 

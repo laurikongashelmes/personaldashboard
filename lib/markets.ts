@@ -1,6 +1,8 @@
-import yahooFinance from 'yahoo-finance2';
+import YahooFinance from 'yahoo-finance2';
 import type { TickerData } from '../types';
 import type { Quote } from 'yahoo-finance2/modules/quote';
+
+const yahooFinance = new YahooFinance();
 
 interface TickerConfig {
   symbol: string;

@@ -11,7 +11,7 @@ export default function EnergySection({ data, loading, error }: Props) {
   return (
     <section>
       <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-3">
-        Energy
+        Energia
       </h2>
       <div className="flex gap-4 flex-wrap">
         {loading ? (
@@ -21,7 +21,7 @@ export default function EnergySection({ data, loading, error }: Props) {
             <div className="flex-1 min-w-40"><Widget label="" value="" loading /></div>
           </>
         ) : error || !data ? (
-          <p className="text-sm text-red-400">{error ?? 'Unavailable'}</p>
+          <p className="text-sm text-red-400">{error ?? 'Pole saadaval'}</p>
         ) : (
           <>
             <div className="flex-1 min-w-40">
@@ -42,7 +42,7 @@ export default function EnergySection({ data, loading, error }: Props) {
             </div>
             <div className="flex-1 min-w-40">
               <Widget
-                label="Nord Pool Avg"
+                label="Nord Pool Kesk"
                 value={`${data.nordPool.avgPrice.toFixed(1)} €/MWh`}
                 subValueColor="neutral"
               />

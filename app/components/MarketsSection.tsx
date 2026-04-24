@@ -27,7 +27,7 @@ export default function MarketsSection({ data, loading, error }: Props) {
   return (
     <section>
       <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-3">
-        Markets
+        Turud
       </h2>
       <div className="flex gap-4 flex-wrap">
         {loading
@@ -36,7 +36,7 @@ export default function MarketsSection({ data, loading, error }: Props) {
           ? <p className="text-sm text-red-400">{error}</p>
           : data.map(ticker => {
               if (ticker.price == null) {
-                return <Widget key={ticker.symbol} label={ticker.label} value="—" error="Unavailable" />;
+                return <Widget key={ticker.symbol} label={ticker.label} value="—" error="Pole saadaval" />;
               }
               const { text, color } = formatChange(ticker.change!, ticker.changePercent!);
               return (
