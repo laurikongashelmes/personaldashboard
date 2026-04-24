@@ -1,4 +1,5 @@
 import type { TickerData } from '@/types';
+import TickerCard from './TickerCard';
 import Widget from './Widget';
 
 interface Props {
@@ -13,16 +14,6 @@ function formatPrice(price: number, symbol: string): string {
   return price.toFixed(2);
 }
 
-function formatChange(change: number, changePercent: number): { text: string; color: 'green' | 'red' } {
-  const arrow = change >= 0 ? '▲' : '▼';
-  const sign = changePercent >= 0 ? '+' : '−';
-  const abs = Math.abs(changePercent).toFixed(2);
-  return {
-    text: `${arrow} ${sign}${abs}%`,
-    color: change >= 0 ? 'green' : 'red',
-  };
-}
-
 export default function MarketsSection({ data, loading, error }: Props) {
   return (
     <section>
@@ -30,26 +21,28 @@ export default function MarketsSection({ data, loading, error }: Props) {
         Turud
       </h2>
       <div className="flex gap-4 flex-wrap">
-        {loading
-          ? [1, 2].map(i => <div key={i} className="flex-1 min-w-40"><Widget label="" value="" loading /></div>)
-          : error
-          ? <p className="text-sm text-red-400">{error}</p>
-          : data.map(ticker => {
-              if (ticker.price == null) {
-                return <Widget key={ticker.symbol} label={ticker.label} value="—" error="Pole saadaval" />;
-              }
-              const { text, color } = formatChange(ticker.change!, ticker.changePercent!);
-              return (
-                <div key={ticker.symbol} className="flex-1 min-w-40">
-                  <Widget
-                    label={ticker.label}
-                    value={formatPrice(ticker.price, ticker.symbol)}
-                    subValue={text}
-                    subValueColor={color}
-                  />
-                </div>
-              );
-            })}
+        {loading ? (
+          [1, 2].map(i => (
+            <div key={i} className="flex-1 min-w-40">
+              <Widget label="" value="" loading />
+            </div>
+          ))
+        ) : error ? (
+          <p className="text-sm text-red-400">{error}</p>
+        ) : (
+          data.map(ticker => (
+            <div key={ticker.symbol} className="flex-1 min-w-40">
+              <TickerCard
+                label={ticker.label}
+                symbol={ticker.symbol}
+                price={ticker.price}
+                change={ticker.change}
+                changePercent={ticker.changePercent}
+                formatValue={(p) => formatPrice(p, ticker.symbol)}
+              />
+            </div>
+          ))
+        )}
       </div>
     </section>
   );

@@ -1,3 +1,16 @@
+jest.mock('@/lib/useChartData', () => ({
+  useChartData: () => ({ points: [], loading: false, error: null }),
+}));
+
+jest.mock('recharts', () => ({
+  AreaChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Area: () => null,
+  Tooltip: () => null,
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  XAxis: () => null,
+  YAxis: () => null,
+}));
+
 import { render, screen } from '@testing-library/react';
 import MarketsSection from '../MarketsSection';
 import type { TickerData } from '@/types';
