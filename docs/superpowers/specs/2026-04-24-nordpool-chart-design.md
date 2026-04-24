@@ -50,6 +50,8 @@ The Energia section currently displays Nord Pool EE prices as two plain stat wid
 
 All data sourced from the Elering API: `https://dashboard.elering.ee/api/nps/price`
 
+Timezone: all date window calculations use `Europe/Tallinn` with the correct UTC offset computed dynamically via `Intl.DateTimeFormat` (handles both EET `+02:00` and EEST `+03:00`). The hardcoded `+03:00` in the current `lib/energy.ts` is a known limitation that will be corrected in `lib/nordpool-chart.ts`.
+
 ### Fetch strategy per range
 
 | Range | Elering window | Aggregation | Points |
