@@ -8,8 +8,8 @@ function getPeriod1(range: ChartRange): Date {
   const now = Date.now();
   switch (range) {
     case '1D': {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const today = new Date(now);
+      today.setUTCHours(0, 0, 0, 0);
       return today;
     }
     case '7D':  return new Date(now - 7 * 24 * 60 * 60 * 1000);
@@ -27,6 +27,10 @@ function getInterval(range: ChartRange): '15m' | '1d' | '1wk' {
   }
 }
 
+/**
+ * Fetches historical chart data from Yahoo Finance.
+ * Throws if the API call fails — callers are responsible for error handling.
+ */
 export async function fetchChartData(symbol: ChartSymbol, range: ChartRange): Promise<ChartData> {
   const result = await yahooFinance.chart(symbol, {
     period1: getPeriod1(range),

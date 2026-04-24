@@ -81,4 +81,27 @@ describe('fetchChartData', () => {
       expect.objectContaining({ interval: '1wk' }),
     );
   });
+
+  describe('period1 calculation', () => {
+    const FIXED_NOW = new Date('2024-01-15T12:00:00.000Z').getTime(); // 1705320000000
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it.each([
+      ['1D', new Date('2024-01-15T00:00:00.000Z')],
+      ['7D', new Date(FIXED_NOW - 7 * 24 * 60 * 60 * 1000)],
+      ['1M', new Date(FIXED_NOW - 30 * 24 * 60 * 60 * 1000)],
+      ['1Y', new Date(FIXED_NOW - 365 * 24 * 60 * 60 * 1000)],
+    ] as any[])('range %s returns correct period1', async (range, expectedPeriod1) => {
+      jest.spyOn(Date, 'now').mockReturnValue(FIXED_NOW);
+      mockChart.mockResolvedValue({ quotes: [] });
+      await fetchChartData('^STOXX50E', range);
+      expect(mockChart).toHaveBeenCalledWith(
+        '^STOXX50E',
+        expect.objectContaining({ period1: expectedPeriod1 })
+      );
+    });
+  });
 });
