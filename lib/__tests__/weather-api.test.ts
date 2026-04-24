@@ -47,14 +47,16 @@ describe('fetchWeatherData', () => {
   });
 
   it('returns dailyChart with hour and temp properties', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2024-04-24T10:00:00Z'));
     const result = await fetchWeatherData({ lat: 59.437, lon: 24.7536 });
-    expect(Array.isArray(result.dailyChart)).toBe(true);
+    expect(result.dailyChart.length).toBeGreaterThan(0);
     result.dailyChart.forEach(point => {
       expect(typeof point.hour).toBe('number');
       expect(typeof point.temp).toBe('number');
       expect(point.hour).toBeGreaterThanOrEqual(0);
       expect(point.hour).toBeLessThanOrEqual(23);
     });
+    jest.useRealTimers();
   });
 
   it('throws when fetch fails', async () => {
