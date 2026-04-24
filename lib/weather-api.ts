@@ -1,5 +1,5 @@
 import type { WeatherData } from '../types';
-import { mapWeatherCode, filterRemainingHourly } from './weather';
+import { mapWeatherCode, filterRemainingHourly, buildDailyChart } from './weather';
 
 interface Coords {
   lat: number;
@@ -12,7 +12,7 @@ export async function fetchWeatherData(coords: Coords): Promise<WeatherData> {
     longitude: String(coords.lon),
     current: 'temperature_2m,weather_code',
     hourly: 'temperature_2m,weather_code',
-    forecast_days: '1',
+    forecast_days: '2',
     timezone: 'UTC',
   });
 
@@ -29,5 +29,11 @@ export async function fetchWeatherData(coords: Coords): Promise<WeatherData> {
     json.hourly.weather_code,
   );
 
-  return { current: { temp: currentTemp, description, emoji }, hourly };
+  const dailyChart = buildDailyChart(
+    json.hourly.time,
+    json.hourly.temperature_2m,
+  );
+
+  return { current: { temp: currentTemp, description, emoji }, hourly, dailyChart };
 }
+

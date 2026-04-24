@@ -46,6 +46,17 @@ describe('fetchWeatherData', () => {
     });
   });
 
+  it('returns dailyChart with hour and temp properties', async () => {
+    const result = await fetchWeatherData({ lat: 59.437, lon: 24.7536 });
+    expect(Array.isArray(result.dailyChart)).toBe(true);
+    result.dailyChart.forEach(point => {
+      expect(typeof point.hour).toBe('number');
+      expect(typeof point.temp).toBe('number');
+      expect(point.hour).toBeGreaterThanOrEqual(0);
+      expect(point.hour).toBeLessThanOrEqual(23);
+    });
+  });
+
   it('throws when fetch fails', async () => {
     global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500 }) as jest.Mock;
     await expect(fetchWeatherData({ lat: 59.437, lon: 24.7536 })).rejects.toThrow();
