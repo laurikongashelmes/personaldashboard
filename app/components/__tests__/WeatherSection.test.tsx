@@ -90,9 +90,18 @@ describe('WeatherSection', () => {
     jest.useFakeTimers().setSystemTime(new Date('2024-04-24T07:00:00Z'));
     render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
     const slots = document.querySelectorAll('[class*="rounded-lg"]');
-    // Find the 12:00 slot — it should have indigo background
     const slot12 = Array.from(slots).find(el => el.textContent?.includes('12:00'));
     expect(slot12?.className).toMatch(/bg-indigo-50/);
+    jest.useRealTimers();
+  });
+
+  it('highlights 00:00 slot when current hour is past 18:00', () => {
+    // 17:00 UTC = 20:00 Tallinn (UTC+3 in April) — 18:00 has passed, next should be 00:00
+    jest.useFakeTimers().setSystemTime(new Date('2024-04-24T17:00:00Z'));
+    render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    const slots = document.querySelectorAll('[class*="rounded-lg"]');
+    const slot00 = Array.from(slots).find(el => el.textContent?.includes('00:00'));
+    expect(slot00?.className).toMatch(/bg-indigo-50/);
     jest.useRealTimers();
   });
 });

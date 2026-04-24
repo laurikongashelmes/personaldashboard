@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useId } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ReferenceLine, ResponsiveContainer,
 } from 'recharts';
@@ -40,6 +40,9 @@ function toChartEntries(dailyChart: TempPoint[], currentHour: number): ChartEntr
 
 export default function WeatherSection({ data, loading, error }: Props) {
   const currentTallinnHour = getTallinnHour();
+  const uid = useId();
+  const pastGradId = `wPastGrad-${uid}`;
+  const futureGradId = `wFutureGrad-${uid}`;
 
   const chartEntries = useMemo(
     () => (data ? toChartEntries(data.dailyChart, currentTallinnHour) : []),
@@ -112,11 +115,11 @@ export default function WeatherSection({ data, loading, error }: Props) {
               <ResponsiveContainer width="100%" height={72} minWidth={0}>
                 <AreaChart data={chartEntries} margin={{ top: 8, right: 0, bottom: 0, left: 0 }}>
                   <defs>
-                    <linearGradient id="wPastGrad" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id={pastGradId} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#6366f1" stopOpacity={0.10} />
                       <stop offset="100%" stopColor="#6366f1" stopOpacity={0.01} />
                     </linearGradient>
-                    <linearGradient id="wFutureGrad" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id={futureGradId} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#6366f1" stopOpacity={0.28} />
                       <stop offset="100%" stopColor="#6366f1" stopOpacity={0.03} />
                     </linearGradient>
@@ -145,7 +148,7 @@ export default function WeatherSection({ data, loading, error }: Props) {
                     dataKey="pastTemp"
                     stroke="#a5b4fc"
                     strokeWidth={1.8}
-                    fill="url(#wPastGrad)"
+                    fill={`url(#${pastGradId})`}
                     dot={false}
                     connectNulls={false}
                     isAnimationActive={false}
@@ -155,7 +158,7 @@ export default function WeatherSection({ data, loading, error }: Props) {
                     dataKey="futureTemp"
                     stroke="#6366f1"
                     strokeWidth={2}
-                    fill="url(#wFutureGrad)"
+                    fill={`url(#${futureGradId})`}
                     dot={false}
                     connectNulls={false}
                     isAnimationActive={false}
