@@ -1,4 +1,4 @@
-import type { HourlySlot } from '../types';
+import type { HourlySlot, TempPoint } from '../types';
 
 interface WeatherCondition {
   description: string;
@@ -33,29 +33,74 @@ export function mapWeatherCode(code: number): WeatherCondition {
   return WMO_CODES[code] ?? { description: 'Teadmata', emoji: '🌡️' };
 }
 
+const TALLINN_TZ = 'Europe/Tallinn';
+
+function getTallinnHour(date: Date): number {
+  return parseInt(
+    new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      hour12: false,
+      hourCycle: 'h23',
+      timeZone: TALLINN_TZ,
+    }).format(date),
+    10,
+  );
+}
+
+function getTallinnDateStr(date: Date): string {
+  return date.toLocaleDateString('sv-SE', { timeZone: TALLINN_TZ });
+}
+
 export function filterRemainingHourly(
   times: string[],
   temps: number[],
   codes: number[],
   now: Date = new Date(),
 ): HourlySlot[] {
-  const currentHour = now.getUTCHours();
+  const todayStr = getTallinnDateStr(now);
+  const [y, m, d] = todayStr.split('-').map(Number);
+  const tomorrowStr = getTallinnDateStr(new Date(Date.UTC(y, m - 1, d + 1)));
+
   const results: HourlySlot[] = [];
 
   for (let i = 0; i < times.length; i++) {
-    const slotHour = new Date(times[i] + 'Z').getUTCHours();
-    if (slotHour < currentHour) continue;
-    if ((slotHour - currentHour) % 3 !== 0) continue;
+    const slotDate = new Date(times[i] + 'Z');
+    const slotDateStr = getTallinnDateStr(slotDate);
+    const hour = getTallinnHour(slotDate);
+
+    const isTarget =
+      (slotDateStr === todayStr && (hour === 6 || hour === 12 || hour === 18)) ||
+      (slotDateStr === tomorrowStr && hour === 0);
+
+    if (!isTarget) continue;
 
     const { description, emoji } = mapWeatherCode(codes[i]);
     results.push({
-      time: `${String(slotHour).padStart(2, '0')}:00`,
+      time: `${String(hour).padStart(2, '0')}:00`,
       temp: Math.round(temps[i]),
       description,
       emoji,
     });
+  }
 
-    if (results.length >= 6) break;
+  return results;
+}
+
+export function buildDailyChart(
+  times: string[],
+  temps: number[],
+  now: Date = new Date(),
+): TempPoint[] {
+  const todayStr = getTallinnDateStr(now);
+  const results: TempPoint[] = [];
+
+  for (let i = 0; i < times.length; i++) {
+    const slotDate = new Date(times[i] + 'Z');
+    if (getTallinnDateStr(slotDate) !== todayStr) continue;
+    results.push({
+      hour: getTallinnHour(slotDate),
+      temp: Math.round(temps[i]),
+    });
   }
 
   return results;
