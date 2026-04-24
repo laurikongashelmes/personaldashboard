@@ -43,3 +43,19 @@ export interface ChartPoint {
 export interface ChartData {
   points: ChartPoint[];
 }
+
+export type NordPoolRange = 'CURRENT' | '7D' | '1M' | '1Y';
+
+export interface NordPoolCurrentData {
+  points: ChartPoint[];
+  hasTomorrow: boolean;
+  currentHourIndex: number;
+  currentHourPrice: number | null;
+  todayAvgPrice: number;
+}
+
+export interface NordPoolHistoryData {
+  points: ChartPoint[];
+}
+
+export type NordPoolChartData = NordPoolCurrentData | NordPoolHistoryData;
