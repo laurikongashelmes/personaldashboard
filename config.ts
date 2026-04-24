@@ -4,3 +4,6 @@ export const TICKERS = [
 ];
 
 export const TALLINN_COORDS = { lat: 59.437, lon: 24.7536 };
+
+export const CHART_TICKERS = ['^STOXX50E', 'EURUSD=X', 'BZ=F'] as const;
+export type ChartSymbol = typeof CHART_TICKERS[number];

@@ -32,3 +32,14 @@ export interface WeatherData {
   };
   hourly: HourlySlot[];
 }
+
+export type ChartRange = '1D' | '7D' | '1M' | '1Y';
+
+export interface ChartPoint {
+  timestamp: number;
+  price: number;
+}
+
+export interface ChartData {
+  points: ChartPoint[];
+}
