@@ -70,7 +70,9 @@ async function fetchCurrentData(now: Date): Promise<NordPoolCurrentData> {
   }
 
   const allEntries = [...todayEntries, ...tomorrowEntries];
-  const points: ChartPoint[] = allEntries.map(e => ({ timestamp: e.timestamp * 1000, price: e.price }));
+  // Keep only the :00 entry of each hour (first 15-min slot) — timestamps divisible by 3600s
+  const hourlyEntries = allEntries.filter(e => e.timestamp % 3600 === 0);
+  const points: ChartPoint[] = hourlyEntries.map(e => ({ timestamp: e.timestamp * 1000, price: e.price }));
 
   const nowMs = now.getTime();
   const idx = points.findIndex(p => p.timestamp <= nowMs && nowMs < p.timestamp + 3600 * 1000);
