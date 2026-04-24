@@ -6,19 +6,12 @@ export interface TickerData {
   changePercent: number | null;
 }
 
-export interface NordPoolStats {
-  avgPrice: number;
-  minPrice: number;
-  minHour: string; // e.g. "03:00"
-}
-
 export interface EnergyData {
   brent: TickerData;
-  nordPool: NordPoolStats;
 }
 
 export interface HourlySlot {
-  time: string;  // e.g. "15:00"
+  time: string;
   temp: number;
   description: string;
   emoji: string;
