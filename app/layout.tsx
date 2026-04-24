@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Hommikuülevaade',
-  description: 'Isiklik hommikuarmatuurlaud — turud, energia ja ilm ühes kohas.',
+  title: 'Päeva ülevaade',
+  description: 'Isiklik armatuurlaud — turud, energia ja ilm ühes kohas.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
