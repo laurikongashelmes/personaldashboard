@@ -15,7 +15,8 @@ export async function GET(request: NextRequest) {
   try {
     const data = await fetchNordPoolChartData(range);
     return NextResponse.json(data);
-  } catch {
+  } catch (error) {
+    console.error('[nordpool-chart] Failed to fetch chart data:', error);
     return NextResponse.json({ error: 'Failed to fetch chart data' }, { status: 503 });
   }
 }
