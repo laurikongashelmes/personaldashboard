@@ -16,6 +16,7 @@ export function useNordPoolChartData(range: NordPoolRange): UseNordPoolChartData
     let cancelled = false;
     setLoading(true);
     setError(null);
+    setData(null);
 
     fetch(`/api/nordpool-chart?range=${range}`)
       .then(r => {
@@ -28,8 +29,9 @@ export function useNordPoolChartData(range: NordPoolRange): UseNordPoolChartData
           setLoading(false);
         }
       })
-      .catch(() => {
+      .catch((err: unknown) => {
         if (!cancelled) {
+          console.error('[useNordPoolChartData] fetch failed:', err);
           setError('Andmed pole saadaval');
           setLoading(false);
         }

@@ -91,3 +91,21 @@ it('re-fetches when range changes', async () => {
   await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2));
   expect(global.fetch).toHaveBeenLastCalledWith('/api/nordpool-chart?range=7D');
 });
+
+it('does not update state after unmount (cancellation)', async () => {
+  let resolveStale!: (v: Response) => void;
+  const stalePromise = new Promise<Response>(res => { resolveStale = res; });
+
+  global.fetch = jest.fn().mockReturnValueOnce(stalePromise);
+
+  const { result, unmount } = renderHook(() => useNordPoolChartData('CURRENT'));
+
+  unmount(); // triggers cancelled = true
+
+  resolveStale({ ok: true, json: () => Promise.resolve(MOCK_CURRENT_DATA) } as Response);
+  await new Promise(r => setTimeout(r, 50));
+
+  // State should remain in its initial form — no update after cancellation
+  expect(result.current.data).toBeNull();
+  expect(result.current.loading).toBe(true);
+});
