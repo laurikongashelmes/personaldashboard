@@ -74,7 +74,7 @@ export default function TickerCard({
             <p className="text-xs text-red-400">{error}</p>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} initialDimension={{ width: 0, height: 72 }}>
             <AreaChart data={points} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
