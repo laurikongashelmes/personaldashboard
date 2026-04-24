@@ -6,7 +6,9 @@
 
 **Architecture:** A single Next.js App Router page fetches from three internal API routes (`/api/markets`, `/api/energy`, `/api/weather`) in parallel on mount. Each route proxies a free external API server-side, keeping CORS and any future API keys out of the browser. Data transformation logic lives in `lib/` files that are independently tested.
 
-**Tech Stack:** Next.js 14 (App Router), TypeScript, Tailwind CSS, `yahoo-finance2` (financial data), Elering public API (Nord Pool EE), Open-Meteo API (weather), Jest + React Testing Library
+**Tech Stack:** Next.js 16.2 (App Router), React 19, TypeScript, Tailwind CSS 4, `yahoo-finance2` (financial data), Elering public API (Nord Pool EE), Open-Meteo API (weather), Jest 30 + React Testing Library
+
+> ⚠️ **Tailwind CSS 4 is installed.** Configuration is CSS-based (`globals.css` `@theme` block). There is **no** `tailwind.config.ts` — do not create one. Custom theme values go in `app/globals.css` under `@theme`.
 
 ---
 
@@ -37,8 +39,9 @@
 ## Task 1: Scaffold Project
 
 **Files:**
-- Create: `package.json`, `tsconfig.json`, `next.config.ts`, `tailwind.config.ts`, `jest.config.ts`, `jest.setup.ts`
+- Create: `package.json`, `tsconfig.json`, `next.config.ts`, `jest.config.ts`, `jest.setup.ts`
 - Create: `app/layout.tsx`, `app/globals.css`, `app/page.tsx` (boilerplate — replaced in later tasks)
+- Note: No `tailwind.config.ts` — Tailwind v4 uses CSS-based config in `globals.css`
 
 - [ ] **Step 1: Scaffold Next.js app into the existing directory**
 
@@ -112,7 +115,7 @@ export default nextConfig;
 npm run dev
 ```
 
-Expected: `▲ Next.js 14.x.x` ready on `http://localhost:3000`. Stop with Ctrl+C.
+Expected: `▲ Next.js 16.x.x` ready on `http://localhost:3000`. Stop with Ctrl+C.
 
 - [ ] **Step 7: Add .superpowers to .gitignore**
 
