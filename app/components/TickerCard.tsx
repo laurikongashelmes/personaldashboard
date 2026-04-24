@@ -37,7 +37,21 @@ export default function TickerCard({
   changePercent,
   formatValue,
 }: TickerCardProps) {
-  const [selectedRange, setSelectedRange] = useState<ChartRange>('7D');
+  const storageKey = `chart-range-${symbol}`;
+  const [selectedRange, setSelectedRange] = useState<ChartRange>(() => {
+    try {
+      const stored = localStorage.getItem(storageKey);
+      if (stored && (['1D', '7D', '1M', '1Y'] as string[]).includes(stored)) {
+        return stored as ChartRange;
+      }
+    } catch {}
+    return '7D';
+  });
+
+  function handleRangeChange(range: ChartRange) {
+    try { localStorage.setItem(storageKey, range); } catch {}
+    setSelectedRange(range);
+  }
   const { points, loading, error } = useChartData(symbol, selectedRange);
 
   const chartColor = (changePercent ?? 0) >= 0 ? '#6366f1' : '#dc2626';
@@ -115,7 +129,7 @@ export default function TickerCard({
         {RANGES.map(r => (
           <button
             key={r}
-            onClick={() => setSelectedRange(r)}
+            onClick={() => handleRangeChange(r)}
             aria-pressed={selectedRange === r}
             className={`text-xs px-2 py-0.5 rounded transition-colors ${
               selectedRange === r

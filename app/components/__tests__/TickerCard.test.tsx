@@ -29,6 +29,7 @@ const BASE_PROPS = {
 describe('TickerCard', () => {
   beforeEach(() => {
     mockUseChartData.mockReturnValue({ points: [], loading: false, error: null });
+    localStorage.clear();
   });
 
   it('renders the label', () => {
@@ -90,5 +91,18 @@ describe('TickerCard', () => {
     render(<TickerCard {...BASE_PROPS} price={null} change={null} changePercent={null} />);
     expect(screen.getByText('—')).toBeInTheDocument();
     expect(screen.queryByText(/▲|▼/)).not.toBeInTheDocument();
+  });
+
+  it('initialises to stored range from localStorage', () => {
+    localStorage.setItem('chart-range-^STOXX50E', '1M');
+    render(<TickerCard {...BASE_PROPS} />);
+    expect(screen.getByRole('button', { name: '1M' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '7D' })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('persists selected range to localStorage on click', async () => {
+    render(<TickerCard {...BASE_PROPS} />);
+    await userEvent.click(screen.getByRole('button', { name: '1Y' }));
+    expect(localStorage.getItem('chart-range-^STOXX50E')).toBe('1Y');
   });
 });
