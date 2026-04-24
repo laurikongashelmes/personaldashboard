@@ -106,6 +106,31 @@ describe('fetchNordPoolChartData — CURRENT', () => {
     if (!('currentHourIndex' in result)) throw new Error('expected NordPoolCurrentData');
     expect(result.points[0].timestamp).toBe(TODAY_HOUR_0_UNIX * 1000);
   });
+
+  it('returns currentHourPrice=null when now does not fall in any point window', async () => {
+    global.fetch = jest.fn()
+      .mockResolvedValueOnce(eleringOk(TODAY_ENTRIES))
+      .mockResolvedValueOnce(eleringOk([])) as jest.Mock;
+
+    // Use a time well outside today's entries to force no-match
+    const outsideNow = new Date('2024-04-23T12:00:00.000Z');
+    const result = await fetchNordPoolChartData('CURRENT', outsideNow);
+
+    if (!('currentHourIndex' in result)) throw new Error('expected NordPoolCurrentData');
+    expect(result.currentHourPrice).toBeNull();
+  });
+});
+
+describe('fetchNordPoolChartData — 1M', () => {
+  it('makes one Elering fetch and returns daily averages', async () => {
+    global.fetch = jest.fn().mockResolvedValueOnce(eleringOk([])) as jest.Mock;
+
+    const result = await fetchNordPoolChartData('1M', NOW);
+
+    expect(!('currentHourIndex' in result)).toBe(true);
+    expect(result.points).toHaveLength(0);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('fetchNordPoolChartData — 7D', () => {
