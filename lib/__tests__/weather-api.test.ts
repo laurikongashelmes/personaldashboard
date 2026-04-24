@@ -27,13 +27,13 @@ describe('fetchWeatherData', () => {
 
   it('returns current temperature rounded to integer', async () => {
     const result = await fetchWeatherData({ lat: 59.437, lon: 24.7536 });
-    expect(result.currentTemp).toBe(8);
+    expect(result.current.temp).toBe(8);
   });
 
   it('returns current weather description and emoji', async () => {
     const result = await fetchWeatherData({ lat: 59.437, lon: 24.7536 });
-    expect(result.description).toBe('Partly cloudy');
-    expect(result.emoji).toBe('⛅');
+    expect(result.current.description).toBe('Partly cloudy');
+    expect(result.current.emoji).toBe('⛅');
   });
 
   it('returns hourly forecast slots', async () => {

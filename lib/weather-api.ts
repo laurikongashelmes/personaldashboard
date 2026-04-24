@@ -29,5 +29,5 @@ export async function fetchWeatherData(coords: Coords): Promise<WeatherData> {
     json.hourly.weather_code,
   );
 
-  return { currentTemp, description, emoji, hourly };
+  return { current: { temp: currentTemp, description, emoji }, hourly };
 }

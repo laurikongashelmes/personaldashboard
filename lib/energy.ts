@@ -1,5 +1,6 @@
 import yahooFinance from 'yahoo-finance2';
 import type { EnergyData } from '../types';
+import type { QuoteSummaryResult } from 'yahoo-finance2/modules/quoteSummary-iface';
 import { computeNordPoolStats } from './nordpool';
 
 const ELERING_API = 'https://dashboard.elering.ee/api/nps/price';
@@ -38,7 +39,7 @@ export async function fetchEnergy(): Promise<EnergyData> {
     changePercent: null,
   };
   try {
-    const summary = await yahooFinance.quoteSummary('BZ=F', { modules: ['price'] });
+    const summary = await yahooFinance.quoteSummary('BZ=F', { modules: ['price'] }, { validateResult: true }) as QuoteSummaryResult;
     const p = summary.price;
     brent = {
       symbol: 'BZ=F',

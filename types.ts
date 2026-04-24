@@ -25,8 +25,10 @@ export interface HourlySlot {
 }
 
 export interface WeatherData {
-  currentTemp: number;
-  description: string;
-  emoji: string;
+  current: {
+    temp: number;
+    description: string;
+    emoji: string;
+  };
   hourly: HourlySlot[];
 }

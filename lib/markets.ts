@@ -1,5 +1,6 @@
 import yahooFinance from 'yahoo-finance2';
 import type { TickerData } from '../types';
+import type { Quote } from 'yahoo-finance2/modules/quote';
 
 interface TickerConfig {
   symbol: string;
@@ -10,7 +11,7 @@ export async function fetchMarketData(tickers: TickerConfig[]): Promise<TickerDa
   return Promise.all(
     tickers.map(async ({ symbol, label }) => {
       try {
-        const quote = await yahooFinance.quote(symbol);
+        const quote = await yahooFinance.quote(symbol, {}, { validateResult: true }) as Quote;
         return {
           symbol,
           label,
