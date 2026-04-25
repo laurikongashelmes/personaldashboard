@@ -136,6 +136,9 @@ export default function WeatherSection({ data, loading, error }: Props) {
                   <Tooltip
                     formatter={(value) => [`${Number(value)}°C`, 'Temperatuur']}
                     labelFormatter={(hour) => `${String(Number(hour)).padStart(2, '0')}:00`}
+                    contentStyle={{ fontSize: 10, padding: '2px 6px', lineHeight: '1.4' }}
+                    labelStyle={{ fontSize: 10, marginBottom: 1 }}
+                    itemStyle={{ fontSize: 10, padding: 0 }}
                   />
                   <ReferenceLine
                     x={currentTallinnHour}
