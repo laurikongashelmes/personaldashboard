@@ -46,6 +46,7 @@ describe('fetchWeatherData', () => {
   });
 
   it('returns hourly forecast slots', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2024-04-24T10:00:00Z'));
     const result = await fetchWeatherData({ lat: 59.437, lon: 24.7536 });
     expect(Array.isArray(result.hourly)).toBe(true);
     result.hourly.forEach(slot => {
@@ -53,6 +54,7 @@ describe('fetchWeatherData', () => {
       expect(slot).toHaveProperty('temp');
       expect(slot).toHaveProperty('emoji');
     });
+    jest.useRealTimers();
   });
 
   it('returns dailyChart with hour and temp properties', async () => {
@@ -79,6 +81,8 @@ describe('fetchWeatherData', () => {
     expect(result.tomorrow).toBeDefined();
     expect(Array.isArray(result.tomorrow.hourly)).toBe(true);
     expect(Array.isArray(result.tomorrow.dailyChart)).toBe(true);
+    expect(result.tomorrow.hourly.length).toBeGreaterThan(0);
+    expect(result.tomorrow.dailyChart.length).toBeGreaterThan(0);
     result.tomorrow.hourly.forEach(slot => {
       expect(slot).toHaveProperty('time');
       expect(slot).toHaveProperty('temp');
