@@ -1,5 +1,5 @@
 import type { WeatherData } from '../types';
-import { mapWeatherCode, filterRemainingHourly, buildDailyChart } from './weather';
+import { mapWeatherCode, filterRemainingHourly, buildDailyChart, getTallinnDateStr } from './weather';
 
 interface Coords {
   lat: number;
@@ -20,20 +20,25 @@ export async function fetchWeatherData(coords: Coords): Promise<WeatherData> {
   if (!res.ok) throw new Error(`Open-Meteo API error: ${res.status}`);
   const json = await res.json();
 
+  const now = new Date();
+  const todayStr = getTallinnDateStr(now);
+  const tomorrowStr = getTallinnDateStr(new Date(now.getTime() + 86_400_000));
+
+  const times: string[] = json.hourly.time;
+  const temps: number[] = json.hourly.temperature_2m;
+  const codes: number[] = json.hourly.weather_code;
+
   const currentTemp = Math.round(json.current.temperature_2m);
   const { description, emoji } = mapWeatherCode(json.current.weather_code);
 
-  const hourly = filterRemainingHourly(
-    json.hourly.time,
-    json.hourly.temperature_2m,
-    json.hourly.weather_code,
-  );
-
-  const dailyChart = buildDailyChart(
-    json.hourly.time,
-    json.hourly.temperature_2m,
-  );
-
-  return { current: { temp: currentTemp, description, emoji }, hourly, dailyChart };
+  return {
+    current: { temp: currentTemp, description, emoji },
+    hourly: filterRemainingHourly(times, temps, codes, todayStr),
+    dailyChart: buildDailyChart(times, temps, todayStr),
+    tomorrow: {
+      hourly: filterRemainingHourly(times, temps, codes, tomorrowStr),
+      dailyChart: buildDailyChart(times, temps, tomorrowStr),
+    },
+  };
 }
 
