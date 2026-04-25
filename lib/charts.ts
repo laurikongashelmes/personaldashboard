@@ -7,11 +7,7 @@ const yahooFinance = new YahooFinance();
 function getPeriod1(range: ChartRange): Date {
   const now = Date.now();
   switch (range) {
-    case '1D': {
-      const today = new Date(now);
-      today.setUTCHours(0, 0, 0, 0);
-      return today;
-    }
+    case '1D': return new Date(now - 24 * 60 * 60 * 1000);
     case '7D':  return new Date(now - 7 * 24 * 60 * 60 * 1000);
     case '1M':  return new Date(now - 30 * 24 * 60 * 60 * 1000);
     case '1Y':  return new Date(now - 365 * 24 * 60 * 60 * 1000);

@@ -90,7 +90,7 @@ describe('fetchChartData', () => {
     });
 
     it.each([
-      ['1D', new Date('2024-01-15T00:00:00.000Z')],
+      ['1D', new Date(FIXED_NOW - 24 * 60 * 60 * 1000)],
       ['7D', new Date(FIXED_NOW - 7 * 24 * 60 * 60 * 1000)],
       ['1M', new Date(FIXED_NOW - 30 * 24 * 60 * 60 * 1000)],
       ['1Y', new Date(FIXED_NOW - 365 * 24 * 60 * 60 * 1000)],
