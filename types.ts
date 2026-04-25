@@ -30,6 +30,10 @@ export interface WeatherData {
   };
   hourly: HourlySlot[];
   dailyChart: TempPoint[];
+  tomorrow: {
+    hourly: HourlySlot[];
+    dailyChart: TempPoint[];
+  };
 }
 
 export type ChartRange = '1D' | '7D' | '1M' | '1Y';
