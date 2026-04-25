@@ -152,4 +152,21 @@ describe('WeatherSection', () => {
     const slot10 = Array.from(slots).find(el => el.textContent?.includes('10:00'));
     expect(slot10?.className).toMatch(/bg-indigo-50/);
   });
+
+  it('Homme view renders Homne prognoos with the same large text size as today temperature', () => {
+    render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
+    const heading = screen.getByText('Homne prognoos');
+    expect(heading.className).toMatch(/text-4xl/);
+  });
+
+  it('Homme view renders a same-height description placeholder to preserve card height', () => {
+    render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
+    const heading = screen.getByText('Homne prognoos');
+    const placeholder = heading.nextElementSibling;
+    expect(placeholder).not.toBeNull();
+    expect(placeholder?.className).toMatch(/text-sm/);
+    expect(placeholder?.className).toMatch(/mb-4/);
+  });
 });
