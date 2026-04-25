@@ -28,10 +28,15 @@ const MOCK_OPEN_METEO = {
 
 describe('fetchWeatherData', () => {
   beforeEach(() => {
+    jest.useFakeTimers().setSystemTime(new Date('2024-04-24T10:00:00Z'));
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: async () => MOCK_OPEN_METEO,
     }) as jest.Mock;
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('returns current temperature rounded to integer', async () => {
@@ -46,7 +51,6 @@ describe('fetchWeatherData', () => {
   });
 
   it('returns hourly forecast slots', async () => {
-    jest.useFakeTimers().setSystemTime(new Date('2024-04-24T10:00:00Z'));
     const result = await fetchWeatherData({ lat: 59.437, lon: 24.7536 });
     expect(Array.isArray(result.hourly)).toBe(true);
     result.hourly.forEach(slot => {
@@ -54,11 +58,9 @@ describe('fetchWeatherData', () => {
       expect(slot).toHaveProperty('temp');
       expect(slot).toHaveProperty('emoji');
     });
-    jest.useRealTimers();
   });
 
   it('returns dailyChart with hour and temp properties', async () => {
-    jest.useFakeTimers().setSystemTime(new Date('2024-04-24T10:00:00Z'));
     const result = await fetchWeatherData({ lat: 59.437, lon: 24.7536 });
     expect(result.dailyChart.length).toBeGreaterThan(0);
     result.dailyChart.forEach(point => {
@@ -67,7 +69,6 @@ describe('fetchWeatherData', () => {
       expect(point.hour).toBeGreaterThanOrEqual(0);
       expect(point.hour).toBeLessThanOrEqual(23);
     });
-    jest.useRealTimers();
   });
 
   it('throws when fetch fails', async () => {
@@ -76,7 +77,6 @@ describe('fetchWeatherData', () => {
   });
 
   it('returns tomorrow with hourly and dailyChart arrays', async () => {
-    jest.useFakeTimers().setSystemTime(new Date('2024-04-24T10:00:00Z'));
     const result = await fetchWeatherData({ lat: 59.437, lon: 24.7536 });
     expect(result.tomorrow).toBeDefined();
     expect(Array.isArray(result.tomorrow.hourly)).toBe(true);
@@ -88,6 +88,5 @@ describe('fetchWeatherData', () => {
       expect(slot).toHaveProperty('temp');
       expect(slot).toHaveProperty('emoji');
     });
-    jest.useRealTimers();
   });
 });
