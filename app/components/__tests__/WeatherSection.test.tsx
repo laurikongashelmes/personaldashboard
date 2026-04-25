@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import WeatherSection from '../WeatherSection';
 import type { WeatherData } from '@/types';
 
@@ -21,10 +21,10 @@ const MOCK_DATA: WeatherData = {
     emoji: '⛅',
   },
   hourly: [
-    { time: '06:00', temp: 4,  description: 'Peamiselt selge',  emoji: '🌤️' },
-    { time: '12:00', temp: 11, description: 'Osaliselt pilves', emoji: '⛅' },
+    { time: '10:00', temp: 7,  description: 'Peamiselt selge',  emoji: '🌤️' },
+    { time: '14:00', temp: 11, description: 'Osaliselt pilves', emoji: '⛅' },
     { time: '18:00', temp: 8,  description: 'Vihm',             emoji: '🌧️' },
-    { time: '00:00', temp: 5,  description: 'Pilves',           emoji: '☁️' },
+    { time: '22:00', temp: 5,  description: 'Pilves',           emoji: '☁️' },
   ],
   dailyChart: [
     { hour: 0,  temp: 3 },
@@ -33,6 +33,19 @@ const MOCK_DATA: WeatherData = {
     { hour: 17, temp: 8 },
     { hour: 23, temp: 5 },
   ],
+  tomorrow: {
+    hourly: [
+      { time: '10:00', temp: 6,  description: 'Peamiselt selge',  emoji: '🌤️' },
+      { time: '14:00', temp: 10, description: 'Osaliselt pilves', emoji: '⛅' },
+      { time: '18:00', temp: 9,  description: 'Vihm',             emoji: '🌧️' },
+      { time: '22:00', temp: 4,  description: 'Pilves',           emoji: '☁️' },
+    ],
+    dailyChart: [
+      { hour: 0,  temp: 2 },
+      { hour: 12, temp: 10 },
+      { hour: 23, temp: 4 },
+    ],
+  },
 };
 
 describe('WeatherSection', () => {
@@ -53,8 +66,8 @@ describe('WeatherSection', () => {
 
   it('renders hourly forecast times', () => {
     render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
-    expect(screen.getByText('06:00')).toBeInTheDocument();
-    expect(screen.getByText('12:00')).toBeInTheDocument();
+    expect(screen.getByText('10:00')).toBeInTheDocument();
+    expect(screen.getByText('14:00')).toBeInTheDocument();
   });
 
   it('renders the temperature chart when dailyChart has data', () => {
@@ -80,28 +93,63 @@ describe('WeatherSection', () => {
 
   it('shows loading skeleton', () => {
     render(<WeatherSection data={null} loading={true} error={null} />);
-    // skeleton renders no time slots, chart, or temperature
     expect(screen.queryByText('8°C ⛅')).not.toBeInTheDocument();
     expect(screen.queryByTestId('area-chart')).not.toBeInTheDocument();
   });
 
+  it('renders Täna and Homme toggle buttons', () => {
+    render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    expect(screen.getByRole('button', { name: 'Täna' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Homme' })).toBeInTheDocument();
+  });
+
+  it('clicking Homme shows Homne prognoos and hides current temp', () => {
+    render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
+    expect(screen.getByText('Homne prognoos')).toBeInTheDocument();
+    expect(screen.queryByText('8°C ⛅')).not.toBeInTheDocument();
+  });
+
+  it('clicking Homme switches to tomorrow slot temperatures', () => {
+    render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    // Today's 14:00 slot shows 11° (unique to today — tomorrow has no 11° slot)
+    expect(screen.getByText('11°')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
+    // Tomorrow's 14:00 slot shows 10° (unique to tomorrow — today has no 10° slot)
+    expect(screen.getByText('10°')).toBeInTheDocument();
+    expect(screen.queryByText('11°')).not.toBeInTheDocument();
+  });
+
+  it('clicking Homme shows Temperatuur homme chart label', () => {
+    render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
+    expect(screen.getByText('Temperatuur homme')).toBeInTheDocument();
+    expect(screen.queryByText('Temperatuur täna')).not.toBeInTheDocument();
+  });
+
+  it('clicking Täna after Homme restores today view', () => {
+    render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Täna' }));
+    expect(screen.getByText('8°C ⛅')).toBeInTheDocument();
+    expect(screen.queryByText('Homne prognoos')).not.toBeInTheDocument();
+  });
+
   it('highlights the next upcoming slot with indigo styling', () => {
-    // Pin clock to 10:00 Tallinn (07:00 UTC) — 12:00 should be next
+    // Pin clock to 10:00 Tallinn (07:00 UTC) — next slot after hour 10 is 14:00
     jest.useFakeTimers().setSystemTime(new Date('2024-04-24T07:00:00Z'));
     render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
     const slots = document.querySelectorAll('[class*="rounded-lg"]');
-    const slot12 = Array.from(slots).find(el => el.textContent?.includes('12:00'));
-    expect(slot12?.className).toMatch(/bg-indigo-50/);
+    const slot14 = Array.from(slots).find(el => el.textContent?.includes('14:00'));
+    expect(slot14?.className).toMatch(/bg-indigo-50/);
     jest.useRealTimers();
   });
 
-  it('highlights 00:00 slot when current hour is past 18:00', () => {
-    // 17:00 UTC = 20:00 Tallinn (UTC+3 in April) — 18:00 has passed, next should be 00:00
-    jest.useFakeTimers().setSystemTime(new Date('2024-04-24T17:00:00Z'));
+  it('highlights first tomorrow slot (10:00) when Homme is selected', () => {
     render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
     const slots = document.querySelectorAll('[class*="rounded-lg"]');
-    const slot00 = Array.from(slots).find(el => el.textContent?.includes('00:00'));
-    expect(slot00?.className).toMatch(/bg-indigo-50/);
-    jest.useRealTimers();
+    const slot10 = Array.from(slots).find(el => el.textContent?.includes('10:00'));
+    expect(slot10?.className).toMatch(/bg-indigo-50/);
   });
 });

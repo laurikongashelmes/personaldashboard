@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useId } from 'react';
+import { useState, useMemo, useId } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ReferenceLine, ResponsiveContainer,
 } from 'recharts';
@@ -39,24 +39,33 @@ function toChartEntries(dailyChart: TempPoint[], currentHour: number): ChartEntr
 }
 
 export default function WeatherSection({ data, loading, error }: Props) {
+  const [selectedDay, setSelectedDay] = useState<'today' | 'tomorrow'>('today');
   const currentTallinnHour = getTallinnHour();
   const uid = useId();
   const pastGradId = `wPastGrad-${uid}`;
   const futureGradId = `wFutureGrad-${uid}`;
 
+  const isTomorrow = selectedDay === 'tomorrow';
+  const activeHourly = data ? (isTomorrow ? data.tomorrow.hourly : data.hourly) : [];
+  const activeDailyChart = data ? (isTomorrow ? data.tomorrow.dailyChart : data.dailyChart) : [];
+
   const chartEntries = useMemo(
-    () => (data ? toChartEntries(data.dailyChart, currentTallinnHour) : []),
-    [data, currentTallinnHour],
+    () =>
+      isTomorrow
+        ? activeDailyChart.map(({ hour, temp }) => ({ hour, futureTemp: temp }))
+        : toChartEntries(activeDailyChart, currentTallinnHour),
+    [activeDailyChart, isTomorrow, currentTallinnHour],
   );
 
   const nextSlotTime = useMemo(() => {
     if (!data) return null;
+    if (isTomorrow) return activeHourly[0]?.time ?? null;
     const next = data.hourly.find(slot => {
       const h = parseInt(slot.time.split(':')[0], 10);
-      return h > currentTallinnHour || (h === 0 && currentTallinnHour >= 18);
+      return h > currentTallinnHour;
     });
     return next?.time ?? null;
-  }, [data, currentTallinnHour]);
+  }, [data, isTomorrow, activeHourly, currentTallinnHour]);
 
   return (
     <section>
@@ -71,7 +80,7 @@ export default function WeatherSection({ data, loading, error }: Props) {
             {[1, 2, 3, 4].map(i => <div key={i} className="h-12 bg-gray-200 rounded flex-1" />)}
           </div>
           <div className="h-px bg-gray-200 my-4" />
-          <div className="h-[72px] bg-gray-200 rounded" />
+          <div className="h-[140px] bg-gray-200 rounded" />
         </div>
       ) : error || !data ? (
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
@@ -79,13 +88,19 @@ export default function WeatherSection({ data, loading, error }: Props) {
         </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-          <p className="text-4xl font-bold text-gray-900 mb-1">
-            {data.current.temp}°C {data.current.emoji}
-          </p>
-          <p className="text-sm text-gray-500 mb-4">{data.current.description}</p>
-          {data.hourly.length > 0 && (
+          {isTomorrow ? (
+            <p className="text-xl font-semibold text-gray-400 mb-4">Homne prognoos</p>
+          ) : (
+            <>
+              <p className="text-4xl font-bold text-gray-900 mb-1">
+                {data.current.temp}°C {data.current.emoji}
+              </p>
+              <p className="text-sm text-gray-500 mb-4">{data.current.description}</p>
+            </>
+          )}
+          {activeHourly.length > 0 && (
             <div className="flex gap-2 overflow-x-auto mb-4">
-              {data.hourly.map(slot => {
+              {activeHourly.map(slot => {
                 const isNext = slot.time === nextSlotTime;
                 return (
                   <div
@@ -110,10 +125,10 @@ export default function WeatherSection({ data, loading, error }: Props) {
             <>
               <div className="h-px bg-gray-100 mb-3" />
               <p className="text-[9px] font-semibold tracking-widest text-gray-400 uppercase mb-2">
-                Temperatuur täna
+                {isTomorrow ? 'Temperatuur homme' : 'Temperatuur täna'}
               </p>
-              <ResponsiveContainer width="100%" height={72} minWidth={0}>
-                <AreaChart data={chartEntries} margin={{ top: 8, right: 0, bottom: 0, left: 0 }}>
+              <ResponsiveContainer width="100%" height={140} minWidth={0}>
+                <AreaChart data={chartEntries} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                   <defs>
                     <linearGradient id={pastGradId} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#6366f1" stopOpacity={0.10} />
@@ -132,7 +147,14 @@ export default function WeatherSection({ data, loading, error }: Props) {
                     axisLine={false}
                     tickLine={false}
                   />
-                  <YAxis domain={['auto', 'auto']} hide />
+                  <YAxis
+                    domain={['auto', 'auto']}
+                    tick={{ fontSize: 9, fill: '#9ca3af' }}
+                    tickFormatter={v => `${v}°`}
+                    width={28}
+                    axisLine={false}
+                    tickLine={false}
+                  />
                   <Tooltip
                     formatter={(value) => [`${Number(value)}°C`, 'Temperatuur']}
                     labelFormatter={(hour) => `${String(Number(hour)).padStart(2, '0')}:00`}
@@ -140,12 +162,14 @@ export default function WeatherSection({ data, loading, error }: Props) {
                     labelStyle={{ fontSize: 10, marginBottom: 1 }}
                     itemStyle={{ fontSize: 10, padding: 0 }}
                   />
-                  <ReferenceLine
-                    x={currentTallinnHour}
-                    stroke="#6366f1"
-                    strokeDasharray="3 2"
-                    strokeOpacity={0.7}
-                  />
+                  {!isTomorrow && (
+                    <ReferenceLine
+                      x={currentTallinnHour}
+                      stroke="#6366f1"
+                      strokeDasharray="3 2"
+                      strokeOpacity={0.7}
+                    />
+                  )}
                   <Area
                     type="monotone"
                     dataKey="pastTemp"
@@ -170,6 +194,22 @@ export default function WeatherSection({ data, loading, error }: Props) {
               </ResponsiveContainer>
             </>
           )}
+          <div className="flex gap-1 mt-3">
+            {(['today', 'tomorrow'] as const).map(day => (
+              <button
+                key={day}
+                onClick={() => setSelectedDay(day)}
+                aria-pressed={selectedDay === day}
+                className={`text-xs px-2 py-0.5 rounded transition-colors ${
+                  selectedDay === day
+                    ? 'bg-indigo-500 text-white font-semibold'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {day === 'today' ? 'Täna' : 'Homme'}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </section>
