@@ -103,10 +103,10 @@ describe('WeatherSection', () => {
     expect(screen.getByRole('button', { name: 'Homme' })).toBeInTheDocument();
   });
 
-  it('clicking Homme shows Homne prognoos and hides current temp', () => {
+  it('clicking Homme shows Homme heading and hides current temp', () => {
     render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
     fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
-    expect(screen.getByText('Homne prognoos')).toBeInTheDocument();
+    expect(screen.getByTestId('day-heading').textContent).toBe('Homme');
     expect(screen.queryByText('8°C ⛅')).not.toBeInTheDocument();
   });
 
@@ -132,7 +132,7 @@ describe('WeatherSection', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
     fireEvent.click(screen.getByRole('button', { name: 'Täna' }));
     expect(screen.getByText('8°C ⛅')).toBeInTheDocument();
-    expect(screen.queryByText('Homne prognoos')).not.toBeInTheDocument();
+    expect(screen.getByTestId('day-heading').textContent).toBe('8°C ⛅');
   });
 
   it('highlights the next upcoming slot with indigo styling', () => {
@@ -153,17 +153,17 @@ describe('WeatherSection', () => {
     expect(slot10?.className).toMatch(/bg-indigo-50/);
   });
 
-  it('Homme view renders Homne prognoos with the same large text size as today temperature', () => {
+  it('Homme view renders Homme heading with the same large text size as today temperature', () => {
     render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
     fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
-    const heading = screen.getByText('Homne prognoos');
+    const heading = screen.getByTestId('day-heading');
     expect(heading.className).toMatch(/text-4xl/);
   });
 
   it('Homme view renders a same-height description placeholder to preserve card height', () => {
     render(<WeatherSection data={MOCK_DATA} loading={false} error={null} />);
     fireEvent.click(screen.getByRole('button', { name: 'Homme' }));
-    const heading = screen.getByText('Homne prognoos');
+    const heading = screen.getByTestId('day-heading');
     const placeholder = heading.nextElementSibling;
     expect(placeholder).not.toBeNull();
     expect(placeholder?.className).toMatch(/text-sm/);
