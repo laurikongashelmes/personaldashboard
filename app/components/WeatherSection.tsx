@@ -80,7 +80,7 @@ export default function WeatherSection({ data, loading, error }: Props) {
             {[1, 2, 3, 4].map(i => <div key={i} className="h-12 bg-gray-200 rounded flex-1" />)}
           </div>
           <div className="h-px bg-gray-200 my-4" />
-          <div className="h-[120px] bg-gray-200 rounded" />
+          <div className="h-[128px] bg-gray-200 rounded" />
         </div>
       ) : error || !data ? (
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
@@ -90,7 +90,7 @@ export default function WeatherSection({ data, loading, error }: Props) {
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
           {isTomorrow ? (
             <>
-              <p className="text-4xl font-bold text-gray-900 mb-1">Homne prognoos</p>
+              <p className="text-4xl font-bold text-gray-900 mb-1">Homme</p>
               <p className="text-sm text-gray-500 mb-4">&nbsp;</p>
             </>
           ) : (
@@ -130,7 +130,7 @@ export default function WeatherSection({ data, loading, error }: Props) {
               <p className="text-[9px] font-semibold tracking-widest text-gray-400 uppercase mb-2">
                 {isTomorrow ? 'Temperatuur homme' : 'Temperatuur täna'}
               </p>
-              <ResponsiveContainer width="100%" height={120} minWidth={0}>
+              <ResponsiveContainer width="100%" height={128} minWidth={0}>
                 <AreaChart data={chartEntries} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                   <defs>
                     <linearGradient id={pastGradId} x1="0" y1="0" x2="0" y2="1">
