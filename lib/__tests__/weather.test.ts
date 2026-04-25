@@ -23,52 +23,46 @@ describe('mapWeatherCode', () => {
 
 describe('filterRemainingHourly', () => {
   // April 2024: Tallinn is UTC+3 (EEST)
-  // 06:00 Tallinn = 03:00 UTC = '2024-04-24T03:00'
-  // 12:00 Tallinn = 09:00 UTC = '2024-04-24T09:00'
+  // 10:00 Tallinn = 07:00 UTC = '2024-04-24T07:00'
+  // 14:00 Tallinn = 11:00 UTC = '2024-04-24T11:00'
   // 18:00 Tallinn = 15:00 UTC = '2024-04-24T15:00'
-  // 00:00 Tallinn (next day) = 21:00 UTC = '2024-04-24T21:00'
+  // 22:00 Tallinn = 19:00 UTC = '2024-04-24T19:00'
   const times = [
     '2024-04-24T00:00', '2024-04-24T01:00', '2024-04-24T02:00',
-    '2024-04-24T03:00', // 06:00 Tallinn (today)
-    '2024-04-24T04:00', '2024-04-24T05:00', '2024-04-24T06:00',
-    '2024-04-24T07:00', '2024-04-24T08:00',
-    '2024-04-24T09:00', // 12:00 Tallinn (today)
-    '2024-04-24T10:00', '2024-04-24T11:00', '2024-04-24T12:00',
-    '2024-04-24T13:00', '2024-04-24T14:00',
-    '2024-04-24T15:00', // 18:00 Tallinn (today)
+    '2024-04-24T03:00', '2024-04-24T04:00', '2024-04-24T05:00',
+    '2024-04-24T06:00',
+    '2024-04-24T07:00', // 10:00 Tallinn
+    '2024-04-24T08:00', '2024-04-24T09:00', '2024-04-24T10:00',
+    '2024-04-24T11:00', // 14:00 Tallinn
+    '2024-04-24T12:00', '2024-04-24T13:00', '2024-04-24T14:00',
+    '2024-04-24T15:00', // 18:00 Tallinn
     '2024-04-24T16:00', '2024-04-24T17:00', '2024-04-24T18:00',
-    '2024-04-24T19:00', '2024-04-24T20:00',
-    '2024-04-24T21:00', // 00:00 Tallinn (tomorrow = 2024-04-25)
-    '2024-04-24T22:00', '2024-04-24T23:00',
+    '2024-04-24T19:00', // 22:00 Tallinn
+    '2024-04-24T20:00', '2024-04-24T21:00', '2024-04-24T22:00', '2024-04-24T23:00',
   ];
   const temps = times.map((_, i) => 10 + i);
   const codes = times.map(() => 0);
 
-  it('returns all four slots regardless of current time', () => {
-    // 16:50 Tallinn – 06:00 and 12:00 are in the past but still included
-    const now = new Date('2024-04-24T13:50:00Z');
-    const result = filterRemainingHourly(times, temps, codes, now);
-    expect(result.map(s => s.time)).toEqual(['06:00', '12:00', '18:00', '00:00']);
+  it('returns slots at 10:00, 14:00, 18:00, 22:00 for the given date', () => {
+    const result = filterRemainingHourly(times, temps, codes, '2024-04-24');
+    expect(result.map(s => s.time)).toEqual(['10:00', '14:00', '18:00', '22:00']);
   });
 
-  it('always shows today 06:00, 12:00, 18:00 and tomorrow 00:00', () => {
-    const now = new Date('2024-04-24T00:00:00Z'); // early morning
-    const result = filterRemainingHourly(times, temps, codes, now);
-    expect(result.map(s => s.time)).toEqual(['06:00', '12:00', '18:00', '00:00']);
+  it('returns correct temperatures for matched slots', () => {
+    const result = filterRemainingHourly(times, temps, codes, '2024-04-24');
+    // index 7 → 10:00 Tallinn: temp = 10+7 = 17
+    // index 11 → 14:00 Tallinn: temp = 10+11 = 21
+    expect(result[0].temp).toBe(17);
+    expect(result[1].temp).toBe(21);
   });
 
-  it('returns correct temperatures', () => {
-    const now = new Date('2024-04-24T13:50:00Z');
-    const result = filterRemainingHourly(times, temps, codes, now);
-    // index 3 → 06:00 Tallinn: temp = 10+3 = 13
-    // index 9 → 12:00 Tallinn: temp = 10+9 = 19
-    expect(result[0].temp).toBe(13);
-    expect(result[1].temp).toBe(19);
+  it('returns empty array when no slots match the given date', () => {
+    const result = filterRemainingHourly(times, temps, codes, '2024-04-25');
+    expect(result).toEqual([]);
   });
 
   it('returns correct emoji and description for each slot', () => {
-    const now = new Date('2024-04-24T00:00:00Z');
-    const result = filterRemainingHourly(times, temps, codes, now);
+    const result = filterRemainingHourly(times, temps, codes, '2024-04-24');
     result.forEach((slot: HourlySlot) => {
       expect(slot.time).toMatch(/^\d{2}:\d{2}$/);
       expect(slot.emoji).toBeTruthy();
@@ -109,15 +103,14 @@ describe('buildDailyChart', () => {
   // wrap with one slot before today and one after to verify exclusion
   const times = ['2024-04-23T20:00', ...todayTimes, '2024-04-24T21:00'];
   const temps = times.map((_, i) => i); // 0, 1, 2, …
-  const now = new Date('2024-04-24T10:00:00Z'); // 13:00 Tallinn
 
   it('returns exactly 24 points for a full day', () => {
-    const result = buildDailyChart(times, temps, now);
+    const result = buildDailyChart(times, temps, '2024-04-24');
     expect(result).toHaveLength(24);
   });
 
   it('returns hours 0 through 23 in order', () => {
-    const result = buildDailyChart(times, temps, now);
+    const result = buildDailyChart(times, temps, '2024-04-24');
     expect(result.map(p => p.hour)).toEqual(
       Array.from({ length: 24 }, (_, i) => i),
     );
@@ -125,28 +118,31 @@ describe('buildDailyChart', () => {
 
   it('rounds temperatures to integers', () => {
     const fracTemps = times.map((_, i) => i + 0.7);
-    const result = buildDailyChart(times, fracTemps, now);
+    const result = buildDailyChart(times, fracTemps, '2024-04-24');
     result.forEach(p => expect(Number.isInteger(p.temp)).toBe(true));
   });
 
-  it('excludes slots outside today in Tallinn', () => {
-    const result = buildDailyChart(times, temps, now);
-    // index 0 (23:00 Tallinn previous day) and index 25 (00:00 Tallinn next day) excluded
-    const hours = result.map(p => p.hour);
-    expect(hours).not.toContain(-1); // guard — just verifies length === 24 is enough
+  it('excludes slots outside the target date in Tallinn', () => {
+    const result = buildDailyChart(times, temps, '2024-04-24');
     expect(result).toHaveLength(24); // 26 inputs → only 24 pass the date filter
   });
 
-  it('returns empty array when no data matches today', () => {
-    const result = buildDailyChart([], [], now);
+  it('returns empty array when no data matches the date', () => {
+    const result = buildDailyChart([], [], '2024-04-24');
     expect(result).toEqual([]);
   });
 
   it('maps correct temp to each hour (spot check)', () => {
-    const result = buildDailyChart(times, temps, now);
+    const result = buildDailyChart(times, temps, '2024-04-24');
     // todayTimes[0] is at index 1 in `times`, so temp = 1 → hour 0
     expect(result[0]).toEqual({ hour: 0, temp: 1 });
     // todayTimes[23] is at index 24 in `times`, so temp = 24 → hour 23
     expect(result[23]).toEqual({ hour: 23, temp: 24 });
+  });
+
+  it('returns only tomorrow data when given tomorrow date', () => {
+    // todayTimes are all 2024-04-24 Tallinn, so requesting 2024-04-25 returns only the last slot (21:00 UTC = 00:00 Tallinn 2024-04-25)
+    const result = buildDailyChart(times, temps, '2024-04-25');
+    expect(result).toEqual([{ hour: 0, temp: 25 }]);
   });
 });

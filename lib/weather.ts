@@ -47,32 +47,25 @@ function getTallinnHour(date: Date): number {
   );
 }
 
-function getTallinnDateStr(date: Date): string {
+export function getTallinnDateStr(date: Date): string {
   return date.toLocaleDateString('sv-SE', { timeZone: TALLINN_TZ });
 }
+
+const TARGET_HOURS = [10, 14, 18, 22];
 
 export function filterRemainingHourly(
   times: string[],
   temps: number[],
   codes: number[],
-  now: Date = new Date(),
+  targetDateStr: string,
 ): HourlySlot[] {
-  const todayStr = getTallinnDateStr(now);
-  const [y, m, d] = todayStr.split('-').map(Number);
-  const tomorrowStr = getTallinnDateStr(new Date(Date.UTC(y, m - 1, d + 1)));
-
   const results: HourlySlot[] = [];
 
   for (let i = 0; i < times.length; i++) {
     const slotDate = new Date(times[i] + 'Z');
-    const slotDateStr = getTallinnDateStr(slotDate);
+    if (getTallinnDateStr(slotDate) !== targetDateStr) continue;
     const hour = getTallinnHour(slotDate);
-
-    const isTarget =
-      (slotDateStr === todayStr && (hour === 6 || hour === 12 || hour === 18)) ||
-      (slotDateStr === tomorrowStr && hour === 0);
-
-    if (!isTarget) continue;
+    if (!TARGET_HOURS.includes(hour)) continue;
 
     const { description, emoji } = mapWeatherCode(codes[i]);
     results.push({
@@ -89,14 +82,13 @@ export function filterRemainingHourly(
 export function buildDailyChart(
   times: string[],
   temps: number[],
-  now: Date = new Date(),
+  targetDateStr: string,
 ): TempPoint[] {
-  const todayStr = getTallinnDateStr(now);
   const results: TempPoint[] = [];
 
   for (let i = 0; i < times.length; i++) {
     const slotDate = new Date(times[i] + 'Z');
-    if (getTallinnDateStr(slotDate) !== todayStr) continue;
+    if (getTallinnDateStr(slotDate) !== targetDateStr) continue;
     results.push({
       hour: getTallinnHour(slotDate),
       temp: Math.round(temps[i]),
